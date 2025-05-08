@@ -1,0 +1,73 @@
+/* FieldList.css */
+
+.fieldlist-container {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding: 2rem;
+    background-color: #1e1e1e;
+    color: #f1f1f1;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(241, 196, 15, 0.2);
+  }
+  
+  .available-fields {
+    background-color: #2c2c2c;
+    padding: 1rem;
+    border: 2px solid #f1c40f;
+    border-radius: 10px;
+    min-width: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  
+  .available-fields h3 {
+    color: #f1c40f;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .pivot-zones {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    flex: 2;
+  }
+  
+  .zone {
+    background-color: #2c2c2c;
+    padding: 1rem;
+    border: 2px solid #f1c40f;
+    border-radius: 10px;
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .zone strong {
+    color: #f1c40f;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+  
+  .field-item {
+    background-color: #333;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #f1c40f;
+    font-size: 0.95rem;
+    cursor: grab;
+    transition: background-color 0.2s ease;
+  }
+  
+  .field-item:hover {
+    background-color: #444;
+  }
+  

@@ -1,0 +1,25 @@
+.app-title {
+  font-size: 2rem;
+  color: #ffd700;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.toggle-raw-view {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.toggle-raw-view button {
+  background-color: #333;
+  color: #ffd700;
+  border: 1px solid #ffd700;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-raw-view button:hover {
+  background-color: #444;
+}
