@@ -22,7 +22,7 @@ const RawDataTable = ({ headers, rows }) => {
             {rows.map((row, rowIndex) => (
               <tr key={rowIndex}>
                 {headers.map((header) => (
-                  <td key={header}>{row[header]}</td>
+                  <td key={`${rowIndex}-${header}`}>{row[header]}</td>
                 ))}
               </tr>
             ))}

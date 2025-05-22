@@ -7,79 +7,71 @@ const FieldList = ({ availableFields, setAvailableFields, zones, setZones }) => 
     const { source, destination } = result;
     if (!destination) return;
 
-    const sourceList = source.droppableId === 'available' ? [...availableFields] : [...zones[source.droppableId]];
-    const destList = destination.droppableId === 'available' ? [...availableFields] : [...zones[destination.droppableId]];
+    const sourceZone = source.droppableId;
+    const destZone = destination.droppableId;
 
-    const [movedItem] = sourceList.splice(source.index, 1);
+    if (sourceZone === destZone) return;
 
-    const normalizeItem = (item, zone) => {
-      if (zone === 'values') {
-        return typeof item === 'string' ? { field: item, agg: 'sum' } : item;
-      }
-      return typeof item === 'object' ? item.field : item;
-    };
-
-    destList.splice(destination.index, 0, normalizeItem(movedItem, destination.droppableId));
-
-    // Update source
-    if (source.droppableId === 'available') {
-      setAvailableFields(sourceList);
+    let item;
+    if (sourceZone === 'available') {
+      item = availableFields[source.index];
     } else {
-      setZones(prev => ({ ...prev, [source.droppableId]: sourceList }));
+      item = zones[sourceZone][source.index];
     }
 
-    // Update destination
-    if (destination.droppableId === 'available') {
-      // If coming from values zone, extract just the field name
-      const cleanedList = destList.map(i => typeof i === 'object' ? i.field : i);
-      setAvailableFields(cleanedList);
+    // Remove from source
+    if (sourceZone === 'available') {
+      setAvailableFields(prev => prev.filter((_, i) => i !== source.index));
     } else {
-      setZones(prev => ({ ...prev, [destination.droppableId]: destList }));
+      setZones(prev => ({
+        ...prev,
+        [sourceZone]: prev[sourceZone].filter((_, i) => i !== source.index)
+      }));
+    }
+
+    // Add to destination
+    if (destZone === 'available') {
+      const fieldName = typeof item === 'object' ? item.field : item;
+      setAvailableFields(prev => [...prev, fieldName]);
+    } else {
+      const newItem = destZone === 'values'
+        ? { field: typeof item === 'object' ? item.field : item, agg: 'sum' }
+        : typeof item === 'object' ? item.field : item;
+
+      setZones(prev => ({
+        ...prev,
+        [destZone]: [...prev[destZone], newItem]
+      }));
     }
   };
 
-  const renderZone = (id, label) => (
-    <Droppable droppableId={id} key={id}>
-      {(provided) => (
-        <div className="zone" ref={provided.innerRef} {...provided.droppableProps}>
-          <strong>{label}</strong>
-          {zones[id].map((item, idx) => {
-            const field = typeof item === 'object' ? item.field : item;
-            const text = typeof item === 'object' ? `${item.field} (${item.agg})` : item;
-            return (
-              <Draggable key={`${id}-${field}`} draggableId={`${id}-${field}-${idx}`} index={idx}>
-                {(provided) => (
-                  <div
-                    className="field-item"
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    {text}
-                  </div>
-                )}
-              </Draggable>
-            );
-          })}
-          {provided.placeholder}
-        </div>
-      )}
-    </Droppable>
-  );
+  const handleRemoveField = (zoneId, index) => {
+    const item = zones[zoneId][index];
+    const fieldName = typeof item === 'object' ? item.field : item;
 
-  return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="fieldlist-container">
-        <Droppable droppableId="available">
-          {(provided) => (
-            <div
-              className="available-fields"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              <h3>Available Fields</h3>
-              {availableFields.map((field, idx) => (
-                <Draggable key={`available-${field}`} draggableId={`available-${field}`} index={idx}>
+    // Remove from zone
+    const newZoneItems = zones[zoneId].filter((_, i) => i !== index);
+    setZones(prev => ({ ...prev, [zoneId]: newZoneItems }));
+
+    // Add back to available
+    setAvailableFields(prev => [...prev, fieldName]);
+  };
+
+  const renderZone = (zoneId, title) => {
+    const items = zones[zoneId];
+    return (
+      <Droppable droppableId={zoneId}>
+        {(provided) => (
+          <div
+            className={`zone ${zoneId}`}
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            <h3>{title}</h3>
+            {items.map((item, index) => {
+              const field = typeof item === 'object' ? item.field : item;
+              return (
+                <Draggable key={`${zoneId}-${field}`} draggableId={`${zoneId}-${field}`} index={index}>
                   {(provided) => (
                     <div
                       className="field-item"
@@ -87,20 +79,79 @@ const FieldList = ({ availableFields, setAvailableFields, zones, setZones }) => 
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      {field}
+                      <span>{field}</span>
+
+                      {zoneId === 'values' && (
+                        <select
+                          value={item.agg}
+                          onChange={(e) => {
+                            const updatedValues = zones.values.map((val, i) =>
+                              i === index ? { ...val, agg: e.target.value } : val
+                            );
+                            setZones({ ...zones, values: updatedValues });
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <option value="sum">SUM</option>
+                          <option value="count">COUNT</option>
+                          <option value="avg">AVG</option>
+                        </select>
+                      )}
+
+                      <button
+                        className="cancel-btn"
+                        onClick={() => handleRemoveField(zoneId, index)}
+                        title="Remove"
+                      >
+                        ×
+                      </button>
                     </div>
                   )}
                 </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+              );
+            })}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    );
+  };
 
-        <div className="pivot-zones">
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="field-list-container">
+        <div className="available-fields-section">
+          <Droppable droppableId="available">
+            {(provided) => (
+              <div
+                className="available-fields"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                <h3>Available Fields</h3>
+                {availableFields.map((field, index) => (
+                  <Draggable key={`available-${field}`} draggableId={`available-${field}`} index={index}>
+                    {(provided) => (
+                      <div
+                        className="field-item"
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        {field}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </div>
+
+        <div className="pivot-zones-section">
           {renderZone('rows', 'Rows')}
           {renderZone('columns', 'Columns')}
-          {renderZone('filters', 'Filters')}
           {renderZone('values', 'Values')}
         </div>
       </div>

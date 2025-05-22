@@ -1,78 +1,40 @@
 .pivot-builder {
-    background-color: #1e1e1e;
-    color: #f1f1f1;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px #ffc10740;
-    margin-top: 20px;
-  }
-  
-  .zone-group {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  
-  .zone-box {
-    flex: 1 1 200px;
-    background-color: #2c2c2c;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ffc10740;
-  }
-  
-  .zone-fields {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .zone-item,
-  .agg-item {
-    background-color: #333;
-    padding: 8px 10px;
-    border-radius: 6px;
-    color: #fff;
-    border: 1px solid #555;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .agg-item select {
-    background-color: #222;
-    color: #fff;
-    border: 1px solid #ffc107;
-    padding: 4px;
-    border-radius: 4px;
-  }
-  .pivot-builder {
-    background-color: #1c1c1c;
-    color: #f0f0f0;
-    padding: 1rem;
-    border-radius: 12px;
-    margin-top: 1rem;
-    box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
-  }
-  
-  .pivot-section {
-    margin-bottom: 0.8rem;
-  }
-  
-  .value-field {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 0.3rem;
-  }
-  
-  .value-field select {
-    background-color: #2e2e2e;
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: 0.2rem 0.5rem;
-    margin-top: 0.5rem;
-  }
-  
+  background-color: #1e1e1e;
+  color: #f1f1f1;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #f1c40f;
+  height: 100%;
+}
+
+.pivot-builder h3 {
+  color: #f1c40f;
+  margin-top: 0;
+  text-align: center;
+}
+
+.config-display {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.config-item {
+  background-color: #2c2c2c;
+  padding: 0.8rem;
+  border-radius: 6px;
+}
+
+.config-item strong {
+  color: #f1c40f;
+}
+
+.config-item ul {
+  margin: 0.5rem 0 0 1.5rem;
+  padding: 0;
+  list-style-type: none;
+}
+
+.config-item li {
+  margin-bottom: 0.3rem;
+}

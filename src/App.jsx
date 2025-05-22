@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import UploadCSV from './components/UploadCSV/UploadCSV';
-import FieldList from './components/FieldList/FieldList';
 import RawDataTable from './components/RawDataTable/RawDataTable';
-import PivotBuilder from './components/PivotBuilder/PivotBuilder';
 import PivotTable from './components/PivotTable/PivotTable';
+import FieldList from './components/FieldList/FieldList';
 import './App.css';
 
 const App = () => {
@@ -12,15 +11,20 @@ const App = () => {
   const [zones, setZones] = useState({
     rows: [],
     columns: [],
-    filters: [],
     values: [],
   });
 
   const handleDataLoaded = (parsed) => {
     setCsvData(parsed);
     setAvailableFields(parsed.headers || []);
-    setZones({ rows: [], columns: [], filters: [], values: [] });
+    setZones({
+      rows: [],
+      columns: [],
+      values: [],
+    });
   };
+
+  const hasPivotConfig = zones.rows.length > 0 || zones.columns.length > 0 || zones.values.length > 0;
 
   return (
     <div className="App">
@@ -28,20 +32,32 @@ const App = () => {
       <UploadCSV onDataLoaded={handleDataLoaded} />
 
       {csvData && (
-        <>
-          <RawDataTable headers={csvData.headers} rows={csvData.rows} />
-          <FieldList
-            availableFields={availableFields}
-            setAvailableFields={setAvailableFields}
-            zones={zones}
-            setZones={setZones}
-          />
-          <PivotBuilder zones={zones} setZones={setZones} />
-          <PivotTable data={csvData.rows} config={zones} />
-        </>
+        <div className="main-content">
+          <div className="table-container">
+            {hasPivotConfig ? (
+              <PivotTable 
+                data={csvData.rows} 
+                rows={zones.rows} 
+                columns={zones.columns} 
+                values={zones.values} 
+              />
+            ) : (
+              <RawDataTable headers={csvData.headers} rows={csvData.rows} />
+            )}
+          </div>
+          
+          <div className="fields-container">
+            <FieldList
+              availableFields={availableFields}
+              setAvailableFields={setAvailableFields}
+              zones={zones}
+              setZones={setZones}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
-export default App
+export default App;
